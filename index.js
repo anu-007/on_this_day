@@ -57,15 +57,40 @@ async function selectEventRoundRobin() {
 	const index = (currentYear + dayOfYear) % eventsList?.length;  // Shift based on both year and dayOfYear
   
 	const selectedEvent = eventsList[index];
+	const updatedTweet = updateTweet(selectedEvent);
   
-	return `On this day in ${selectedEvent.year}: ${selectedEvent.text}`;
+	return `On this day in ${selectedEvent.year}: ${updatedTweet}`;
+}
+
+// Replace words in the tweet text with hashtags
+function replaceWordsWithHashtags(text, pages) {
+    let updatedText = text;
+
+    pages.forEach(page => {
+        if (page.title) {
+            const formattedTitle = page.title.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('');
+            const hashtag = `#${formattedTitle}`;
+            
+            // Replace occurrences of the normalized title in the tweet text with the hashtag
+            const regex = new RegExp(`\\b${page.normalizedtitle.replace(/_/g, ' ')}\\b`, 'gi');
+            updatedText = updatedText.replace(regex, hashtag);
+        }
+    });
+
+    return updatedText;
+}
+
+// Main function to update the tweet
+function updateTweet(payload) {
+    const updatedTweet = replaceWordsWithHashtags(payload.text, payload.pages);
+    return updatedTweet;
 }
 
 // Function to post a tweet
 async function postTweet() {
 	try {
 		const tweetText = await selectEventRoundRobin();
-		
+		console.log(tweetText)
 	  	const response = await client.v2.tweet(tweetText);
 	  	console.log('Tweet posted successfully:', response);
 	} catch (error) {
@@ -75,7 +100,7 @@ async function postTweet() {
 
 // Schedule the bot to post every day at 9 AM
 schedule.scheduleJob('0 9 * * *', () => {
-	console.log('Posting tweet...');
+	console.log(`Posting tweet for the day ${new Date()}`);
 	postTweet();
 });
 
@@ -83,8 +108,6 @@ schedule.scheduleJob('0 9 * * *', () => {
 app.get('/', (req, res) => {
     res.send('Twitter bot is running!');
 });
-
-// You can add more routes or functionality if needed
 
 // Start the server
 app.listen(port, () => {
