@@ -2,6 +2,9 @@ require('dotenv').config()
 const { TwitterApi } = require('twitter-api-v2');
 const axios = require('axios');
 const schedule = require('node-schedule');
+const express = require('express');
+const app = express();
+const port = process.env.PORT || 3000;
 
 // Twitter API keys (replace with your own keys)
 const client = new TwitterApi({
@@ -76,5 +79,14 @@ schedule.scheduleJob('0 9 * * *', () => {
 	postTweet();
 });
 
-// Run immediately on startup (optional)
-postTweet();
+// A simple route to check if the server is running
+app.get('/', (req, res) => {
+    res.send('Twitter bot is running!');
+});
+
+// You can add more routes or functionality if needed
+
+// Start the server
+app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+});
