@@ -98,7 +98,7 @@ async function postTweet() {
 }
 
 // A simple route to check if the server is running
-app.get('/', (req, res) => {
+app.get('/post', (req, res) => {
     res.send('Twitter bot is running!');
 	console.log(`Posting tweet for the day ${new Date()}`);
 	postTweet();
