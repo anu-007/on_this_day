@@ -1,7 +1,6 @@
 require('dotenv').config()
 const { TwitterApi } = require('twitter-api-v2');
 const axios = require('axios');
-const schedule = require('node-schedule');
 const express = require('express');
 const app = express();
 const port = process.env.PORT || 3000;
@@ -98,15 +97,11 @@ async function postTweet() {
 	}
 }
 
-// Schedule the bot to post every day at 9 AM
-schedule.scheduleJob('0 9 * * *', () => {
-	console.log(`Posting tweet for the day ${new Date()}`);
-	postTweet();
-});
-
 // A simple route to check if the server is running
 app.get('/', (req, res) => {
     res.send('Twitter bot is running!');
+	console.log(`Posting tweet for the day ${new Date()}`);
+	postTweet();
 });
 
 // Start the server
