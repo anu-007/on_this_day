@@ -99,9 +99,14 @@ async function postTweet() {
 
 // A simple route to check if the server is running
 app.get('/post', (req, res) => {
-    res.send('Twitter bot is running!');
 	console.log(`Posting tweet for the day ${new Date()}`);
 	postTweet();
+	res.send(`posted a tweet on ${new Date()}!`);
+});
+
+// health
+app.get('/ping', (req, res) => {
+    res.send('pong');
 });
 
 // Start the server
