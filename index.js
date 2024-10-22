@@ -93,15 +93,21 @@ async function postTweet() {
 	  	const response = await client.v2.tweet(tweetText);
 	  	console.log('Tweet posted successfully:', response);
 	} catch (error) {
-	  	console.error('Error posting tweet:', error);
+		console.error('Error posting tweet:', error.message);
+		throw error;
 	}
 }
 
 // A simple route to check if the server is running
 app.get('/post', (req, res) => {
 	console.log(`Posting tweet for the day ${new Date()}`);
-	postTweet();
-	res.send(`posted a tweet on ${new Date()}!`);
+	
+	try {
+		postTweet();
+		res.send(`posted a tweet on ${new Date()}!`);
+	} catch(err) {
+		res.send(`${err.message}`);
+	}
 });
 
 // health
@@ -111,5 +117,5 @@ app.get('/ping', (req, res) => {
 
 // Start the server
 app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
+    console.log(`Server started at ${new Date()} is running on port ${port}`);
 });
